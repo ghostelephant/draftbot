@@ -1,0 +1,10 @@
+{
+  "name": "draftbot",
+  "version": "1.0.0",
+  "description": "Discord bot for running drafts on a variety of topics",
+  "main": "bot.js",
+  "repository": "https://github.com/ghostelephant/draftbot.git",
+  "author": "ghostelephant <gumpman155_2@yahoo.com>",
+  "license": "MIT",
+  "private": false
+}
