@@ -1,3 +1,12 @@
+/*
+  Basic registration script, which needs to be run
+  any time a new command is added or substantially
+  edited. I pretty much just copied this from
+  https://discordjs.guide/legacy/app-creation/deploying-commands
+  simplifying it significantly to only register the
+  ping command, for now
+*/
+
 require("dotenv").config();
 
 const {REST, Routes} = require("discord.js");
