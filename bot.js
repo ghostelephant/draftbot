@@ -41,3 +41,5 @@ draftbot.on(Events.InteractionCreate, i => {
   // Actually run the code
   command.execute(i);
 });
+
+require("./config/sequelize");
