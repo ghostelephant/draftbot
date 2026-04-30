@@ -1,0 +1,168 @@
+DOPHER DRAFT BOT
+
+
+----- FUNCTIONS / COMMANDS: -----
+
+
+
+---CONFIG---
+
+= Creating draft =
+/name               Set the name of the draft
+/add slot           Add a slot/category to the draft
+/add detail         Add extra info to a pick category (see e.g. the sports leagues draft)
+/add rule           Add a rule to the draft
+/set pick_count     Set the number of picks allowed (defaults to slot count)
+/order picks        Edit the display order for picks
+/toggle anonymous   Toggle whether the draft is done anonymously (default: anonymous)
+/toggle self_vote   Toggle whether voting for your own picks is allowed (default: not allowed)
+/config             Displays current configuration and help instructions
+
+= Signing up =
+/join               Join as a drafter
+/leave              Leave as a drafter
+/list drafters      Show a list of registered players
+
+= Starting =
+/launch             Ends the config phase and pings for pick
+/pause              Pauses drafting until resumed
+/resume             Resumes a paused draft      
+
+
+---DRAFTING---
+/pick               Make your pick
+/bump               Send a reminder ping (with some time constraints)
+/reject             Reject a pick and re-ping (for duplicate picks, e.g.)
+/skip               Skip a pick for time (will re-ping skipped drafter periodically)
+
+
+---VOTING---
+/open_voting        Opens the voting phase of the draft
+/vote               Triggers the bot to start voting process in DMs
+/close_voting       Closes voting and posts standings
+/standings          Manually trigger a standings post (only if voting is closed)
+
+
+
+----- REQUIRED FEATURES -----
+- Allow for setup of a draft
+- DM player when it's their pick
+- Post picks in relevant channel when they are made
+- Display all picks somewhere (likely Google Sheets)
+- Allow users to vote (whether drafter
+
+
+----- OPTIONAL COMMANDS -----
+
+= Config =
+/timeout            Set timeout for automatic skipping
+/overnight          Set overnight pause
+          (would have to be configurable at the individual drafter level)
+
+= Draft =
+/contest            Launch a discussion about a pick
+/picks              Lists all picks made so far in order
+          (optionally, with a param to show an individual drafter's picks)
+
+----- OPTIONAL FEATURES -----
+- Handling timeouts / skips automatically
+- Maybe a separate site? Probably overkill
+
+
+
+
+
+
+----- DATA MODELS -----
+
+
+* DRAFT
+id                UUID
+created_at        timestamptz
+updated_at        timestamptz
+name              text
+discord_guild_id  text
+discord_channel_id  text
+status            text
+is_anonymous      bool
+rounds            int
+current_round     int
+current_pick      int
+^time_limit_hours int
+can_self_vote     bool
+vote_count        int
+
+
+
+* PARTICIPANT
+id                UUID
+created_at        timestamptz
+updated_at        timestamptz
+discord_id        text
+^timezone         text
+^overnight_start  int
+
+
+
+* SLOT
+id                UUID
+created_at        timestamptz
+updated_at        timestamptz
+created_by        UUID (fk - Participant)
+draft_id          UUID (fk - Draft)
+name              text
+details           jsonb
+
+
+
+* RULE
+id                UUID
+created_at        timestamptz
+updated_at        timestamptz
+created_by        UUID (fk - Participant)
+draft_id          UUID (fk - Draft)
+text              text
+
+
+
+* PICK
+id                UUID
+created_at        timestamptz
+updated_at        timestamptz
+draft_id          UUID (fk - Draft)
+participant_id    UUID (fk - Participant)
+lineup_id         UUID (fk - Lineup)
+slot_id           UUID (fk - Slot)
+pick              text
+details           jsonb
+
+
+
+* LINEUP (participant-draft join table)
+id                UUID
+created_at        timestamptz
+updated_at        timestamptz
+draft_id          UUID (fk - Draft)
+participant_id    UUID (fk - Participant)
+order             int
+is_current        bool
+is_skipped        bool
+ping_time         timestamptz
+^timeout_id       text
+
+
+
+* VOTE
+id                UUID
+created_at        timestamptz
+updated_at        timestamptz
+draft_id          UUID (fk - Draft)
+voter_id          UUID (fk - Participant)
+selection         UUID (fk - Participant)
+place             int
+points            int
+
+
+
+
+
