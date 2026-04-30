@@ -1,20 +1,19 @@
-const {SlashCommandBuilder, MessageFlags} = require("discord.js");
-
-// Set data needed for slash command registration
-const data = new SlashCommandBuilder()
-  .setName("ping")
-  .setDescription("Test if the bot is online");
+const {MessageFlags, SlashCommandBuilder} = require("discord.js");
 
 // The actual code to run
-const execute = async interaction => {
+const ping = async interaction => {
   await interaction.reply({
     content: ":ping_pong: Pong!",
     flags: MessageFlags.Ephemeral
   });
 };
 
-// Export data and execute code so bot.js can use it
+const data = new SlashCommandBuilder()
+  .setName("ping")
+  .setDescription("Test if the bot is online");
+
+// Export function and description
 module.exports = {
   data,
-  execute
+  run: ping
 };

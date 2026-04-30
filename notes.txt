@@ -8,6 +8,7 @@ DOPHER DRAFT BOT
 ---CONFIG---
 
 = Creating draft =
+/create             Create a new draft
 /name               Set the name of the draft
 /add slot           Add a slot/category to the draft
 /add detail         Add extra info to a pick category (see e.g. the sports leagues draft)

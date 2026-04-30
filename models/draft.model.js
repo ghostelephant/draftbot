@@ -9,7 +9,7 @@ const Draft = sequelize.define(
   {
     id: {
       type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDv4,
+      defaultValue: DataTypes.UUIDV4,
       primaryKey: true
     },
     name: {type: DataTypes.TEXT},

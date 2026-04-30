@@ -24,12 +24,18 @@ draftbot.once(Events.ClientReady, c => {
 // Use token (in .env) to actually log in as bot
 draftbot.login(process.env.DISCORD_TOKEN);
 
+
+/*
 // Recognize ping command. Later on I'll build
-// this out a bit more so it recognizes a whole
-// folder's worth of commands dynamically
-const ping = require("./commands/ping");
-draftbot.commands = new Collection();
-draftbot.commands.set("ping", ping);
+// // this out a bit more so it recognizes a whole
+// // folder's worth of commands dynamically
+// const ping = require("./commands/ping");
+// draftbot.commands = new Collection();
+// draftbot.commands.set("ping", ping);
+*/
+
+// Load commands from folder
+draftbot.commands = require("./commands");
 
 // Handle slash commands
 draftbot.on(Events.InteractionCreate, i => {
@@ -37,9 +43,9 @@ draftbot.on(Events.InteractionCreate, i => {
   if(!i.isChatInputCommand()) return;
   // Use the command name from the interaction
   // to determine what code to run
-  command = i.client.commands.get(i.commandName);
+  command = i.client.commands[i.commandName];
   // Actually run the code
-  command.execute(i);
+  command.run(i);
 });
 
 // Load models and connect to database
