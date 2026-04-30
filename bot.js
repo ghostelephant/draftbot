@@ -16,7 +16,7 @@ const {Client, Collection, Events, GatewayIntentBits} = require("discord.js");
 // practical purposes, "the bot"
 const draftbot = new Client({intents: [GatewayIntentBits.Guilds]});
 
-// Send a message when bot is connected
+// Log to console when bot is connected
 draftbot.once(Events.ClientReady, c => {
   console.log(`Logged in as ${c.user.tag}`);
 });
@@ -42,4 +42,5 @@ draftbot.on(Events.InteractionCreate, i => {
   command.execute(i);
 });
 
-require("./config/sequelize");
+// Load models and connect to database
+require("./models");
