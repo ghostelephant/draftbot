@@ -18,7 +18,9 @@ const Participant = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: false,
       unique: true
-    }
+    },
+    discordUsername: {type: DataTypes.TEXT},
+    discordGlobalName: {type: DataTypes.TEXT}
   },
 
   // Model options
@@ -29,7 +31,27 @@ const Participant = sequelize.define(
   }
 );
 
-Draft.belongsToMany(Participant, {through: Lineup});
-Participant.belongsToMany(Draft, {through: Lineup});
+Draft.belongsToMany(Participant, {
+  through: Lineup,
+  as: {
+    singular: "drafter",
+    plural: "drafters"
+  }
+});
+Participant.belongsToMany(Draft, {
+  through: Lineup,
+  as: {
+    singular: "drafter",
+    plural: "drafters"
+  }
+});
+
+Draft.belongsTo(Participant, {
+  as: "createdBy",
+  foreignKey: "created_by"
+});
+Participant.hasMany(Draft, {
+  foreignKey: "created_by"
+});
 
 module.exports = Participant;

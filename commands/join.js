@@ -1,8 +1,6 @@
 const {SlashCommandBuilder, MessageFlags} = require("discord.js");
-const {
-  Draft,
-  Participant
-} = require("../models");
+const {Draft} = require("../models");
+const {getParticipant} = require("../utils");
 const {Op} = require("sequelize");
 
 const join = async interaction => {
@@ -26,30 +24,20 @@ const join = async interaction => {
     );
   }
 
-  let participant = await Participant.findOne({
-    where: {
-      discordId: interaction.user.id
-    }
-  });
+  let participant = await getParticipant(interaction.user);
 
-  if(!participant){
-    participant = await Participant.create({
-      discordId: interaction.user.id
-    });
-  }
-
-  if(await draft.hasParticipant(participant)){
+  if(await draft.hasDrafter(participant)){
     return interaction.followUp(
       `:warning: You have already joined draft "**${draft.name}**"!`
     );
   }
 
-  await draft.addParticipant(participant);
-
-  const participantCount = await draft.countParticipants();
-
+  
+  await draft.addDrafter(participant);
+  
+  const drafterCount = await draft.countDrafters();
   await interaction.followUp({
-    content: `:white_check_mark: You have successfully joined the draft "${draft.name}! This draft currently has ${participantCount} ${participantCount === 1 ? "participant" : "participants"}.`,
+    content: `:white_check_mark: You have successfully joined the draft "${draft.name}"! This draft currently has ${drafterCount} ${drafterCount === 1 ? "participant" : "participants"}.`,
     flags: [MessageFlags.Ephemeral]
   });
 };

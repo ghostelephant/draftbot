@@ -1,6 +1,7 @@
 const {SlashCommandBuilder} = require("discord.js");
 const {Draft} = require("../models");
 const {Op} = require("sequelize");
+const getParticipant = require("../utils/getParticipant");
 
 // The actual code to run
 const create = async interaction => {
@@ -29,6 +30,9 @@ const create = async interaction => {
   }
 
   const draft = await Draft.create(draftData);
+
+  const participant = await getParticipant(interaction.user);
+  draft.setCreatedBy(participant);
 
   await interaction.followUp(`:white_check_mark: Your draft "**${draft.name}**" has been created!`);
 };

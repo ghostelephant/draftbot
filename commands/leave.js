@@ -1,9 +1,7 @@
 const {SlashCommandBuilder, MessageFlags} = require("discord.js");
-const {
-  Draft,
-  Participant
-} = require("../models");
-const { Op } = require("sequelize");
+const {Draft} = require("../models");
+const {getParticipant} = require("../utils");
+const {Op} = require("sequelize");
 
 const leave = async interaction => {
   await interaction.deferReply({
@@ -26,30 +24,18 @@ const leave = async interaction => {
     );
   }
 
-  let participant = await Participant.findOne({
-    where: {
-      discordId: interaction.user.id
-    }
-  });
+  let participant = await getParticipant(interaction.user);
 
-  if(!participant){
-    participant = await Participant.create({
-      discordId: interaction.user.id
-    });
-  }
-
-  if(!(await draft.hasParticipant(participant))){
+  if(!(await draft.hasDrafter(participant))){
     return interaction.followUp(
       `:warning: You are not in draft "**${draft.name}**"!`
     );
   }
 
-  await draft.removeParticipant(participant);
-
-  const participantCount = await draft.countParticipants();
+  await draft.removeDrafter(participant);
 
   await interaction.followUp({
-    content: `:white_check_mark: You have successfully left the draft "${draft.name}! This draft currently has ${participantCount} ${participantCount === 1 ? "participant" : "participants"}.`,
+    content: `:white_check_mark: You have successfully left the draft "${draft.name}."`,
     flags: [MessageFlags.Ephemeral]
   });
 };

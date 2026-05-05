@@ -25,7 +25,7 @@ const Draft = sequelize.define(
     currentRound: {type: DataTypes.INTEGER},
     currentPick: {type: DataTypes.INTEGER},
     canSelfVote: {type: DataTypes.BOOLEAN},
-    voteCount: {type: DataTypes.INTEGER},
+    voteCount: {type: DataTypes.INTEGER}
   },
 
   // Model options
