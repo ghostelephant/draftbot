@@ -1,6 +1,4 @@
-const {SlashCommandBuilder, MessageFlags} = require("discord.js");
-const {Draft} = require("../models");
-const {Op} = require("sequelize");
+const {SlashCommandBuilder} = require("discord.js");
 
 const {
   listParticipants,
