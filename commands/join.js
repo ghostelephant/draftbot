@@ -3,7 +3,7 @@ const {
   Draft,
   Participant
 } = require("../models");
-const { Op } = require("sequelize");
+const {Op} = require("sequelize");
 
 const join = async interaction => {
   await interaction.deferReply({
