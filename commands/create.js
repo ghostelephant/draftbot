@@ -1,5 +1,6 @@
-const {MessageFlags, SlashCommandBuilder} = require("discord.js");
-const {createDraft} = require("../utils");
+const {SlashCommandBuilder} = require("discord.js");
+const {Draft} = require("../models");
+const {Op} = require("sequelize");
 
 // The actual code to run
 const create = async interaction => {
@@ -13,10 +14,23 @@ const create = async interaction => {
     status: "setup"
   };
 
-  const draft = await createDraft(draftData);
-  console.log(draft);
+  const existingDraft = await Draft.findOne({
+    where: {
+       discordGuildId: draftData.discordGuildId,
+       discordChannelId: draftData.discordChannelId,
+       status: {
+        [Op.notIn]: ["completed", "abandoned"]
+       }
+    }
+  });
 
-  await interaction.followUp(`Your draft "${draft.name}" has been created!`);
+  if(existingDraft){
+    return interaction.followUp(`:no_entry_sign: New draft was not created!\nA draft, "**${existingDraft.name}**," is already running in this channel.`)
+  }
+
+  const draft = await Draft.create(draftData);
+
+  await interaction.followUp(`:white_check_mark: Your draft "**${draft.name}**" has been created!`);
 };
 
 const data = new SlashCommandBuilder()
