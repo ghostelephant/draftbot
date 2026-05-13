@@ -1,5 +1,6 @@
 const {SlashCommandBuilder, SectionBuilder, MessageFlags, ButtonStyle, TextDisplayBuilder, ActionRowBuilder, ButtonBuilder, EmbedBuilder} = require("discord.js");
 const {getDraft} = require("../utils");
+const {Rule} = require("../models");
 
 const setup = async interaction => {
   // console.log(interaction.channel);
@@ -10,17 +11,13 @@ const setup = async interaction => {
   const draft = await getDraft({
     discordGuildId: interaction.guildId,
     discordChannelId: interaction.channelId,
-    excludeStatus: ["completed", "abandoned"]
+    excludeStatus: ["completed", "abandoned"],
+    eager: Rule
   });
 
   if(!draft){
     return interaction.channel.send("No draft is currently running in this channel!");
   }
-
-  const rules = [
-    {text: "We Do Not Talk About Fight Club"},
-    {text: "Rule 2: The first rule of Tautology Club is the first rule of Tautology Club"}
-  ];
 
   // // SEND DRAFT INFO AS SECTION
   // const slots = "**Draft Slots**\nNo slots added yet"
@@ -77,27 +74,34 @@ const setup = async interaction => {
   const embed = {
     color: interaction.client.embedColor,
     title: draft.name,
-    description: "test"
+    fields: [
+      {
+        name: "Draft Rules",
+        value: draft.rules.map(rule =>
+          `- ${rule.text}`
+        ).join("\n")
+      }
+    ]
   };
 
-  const actionRow = new ActionRowBuilder()
-    .addComponents(new ButtonBuilder()
-      .setCustomId("edit-rule")
-      .setLabel("Edit a Rule")
-      .setStyle(ButtonStyle.Primary)
-      .setDisabled(true)
-    )
-    .addComponents(new ButtonBuilder()
-      .setCustomId("delete-rule")
-      .setLabel("Delete a Rule")
-      .setStyle(ButtonStyle.Danger)
-    );
+  // const actionRow = new ActionRowBuilder()
+  //   .addComponents(new ButtonBuilder()
+  //     .setCustomId("edit-rule")
+  //     .setLabel("Edit a Rule")
+  //     .setStyle(ButtonStyle.Primary)
+  //     .setDisabled(true)
+  //   )
+  //   .addComponents(new ButtonBuilder()
+  //     .setCustomId("delete-rule")
+  //     .setLabel("Delete a Rule")
+  //     .setStyle(ButtonStyle.Danger)
+  //   );
 
   interaction.channel.send({
     embeds: [embed],
-    components: [actionRow]
+    // components: [actionRow]
   })
-    .catch(e => console.log(e.rawError.errors.embeds[0].color._errors));
+    .catch(e => console.log(e));
 
 };
 

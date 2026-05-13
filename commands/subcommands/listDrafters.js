@@ -36,15 +36,6 @@ const listParticipants = async interaction => {
 
   await interaction.followUp({
     embeds: [embed]
-    // `**${draft.name}** (participant count: ${await draft.countDrafters()})\n\n` +
-    // (drafters.length ?
-    //   drafters
-    //     .map(p => `<@${p.discordId}>`)
-    //     .join("\n")
-    //     + "\n\n-# Note: The order listed here does not necessarily reflect draft pick order."
-    //   :
-    //   "There are no registered drafters yet."
-    // )
   });
 }
 

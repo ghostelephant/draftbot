@@ -4,14 +4,17 @@ const {Draft} = require("../models");
 const getDraft = async ({
   discordGuildId,
   discordChannelId,
-  excludeStatus
+  excludeStatus,
+  eager
 }) => {
-  const where = {
-    discordGuildId,
-    discordChannelId
+  const options = {
+    where: {
+      discordGuildId,
+      discordChannelId
+    }
   };
   if(excludeStatus){
-    where.status = {
+    options.where.status = {
       [Op.notIn]: (Array.isArray(excludeStatus) ?
         excludeStatus
         :
@@ -20,7 +23,12 @@ const getDraft = async ({
     };
   }
 
-  return await Draft.findOne({where});
+  if(eager){
+    options.include = eager;
+  }
+
+
+  return await Draft.findOne(options);
 };
 
 module.exports = getDraft;
