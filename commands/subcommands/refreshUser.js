@@ -18,7 +18,7 @@ const refreshUser = async interaction => {
     // Get user's current display name and
     // add to server hashmap
     const nicknames = participant.discordServerNicknames || {};
-    nicknames[interaction.guildId] = member.nickname || user.displayName;
+    nicknames[interaction.guildId] = member.nickname;
 
     await participant.update({
       discordUsername: user.username,
