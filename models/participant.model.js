@@ -20,7 +20,12 @@ const Participant = sequelize.define(
       unique: true
     },
     discordUsername: {type: DataTypes.TEXT},
-    discordGlobalName: {type: DataTypes.TEXT}
+    discordGlobalName: {type: DataTypes.TEXT},
+    discordGuildNicknames: {
+      type: DataTypes.JSONB,
+      allowNull: false,
+      defaultValue: {}
+    }
   },
 
   // Model options
