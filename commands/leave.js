@@ -1,30 +1,27 @@
 const {SlashCommandBuilder, MessageFlags} = require("discord.js");
-const {Draft} = require("../models");
-const {getParticipant} = require("../utils");
-const {Op} = require("sequelize");
+const {
+  getDraft,
+  getParticipant
+} = require("../utils");
 
 const leave = async interaction => {
   await interaction.deferReply({
     flags: [MessageFlags.Ephemeral]
   });
 
-  const draft = await Draft.findOne({
-    where: {
-      discordGuildId: interaction.guildId,
-      discordChannelId: interaction.channelId,
-      status: {
-        [Op.notIn]: ["completed", "abandoned"]
-      }
-    }
-  });
+  const draft = await getDraft({
+    discordGuildId: interaction.guildId,
+    discordChannelId: interaction.channelId,
+    excludeStatus: ["completed", "abandoned"]
+  })
 
   if(!draft){
     return interaction.followUp(
       "There does not appear to be a draft currently running in this channel! You can create one with the `/create` command."
     );
   }
-
-  let participant = await getParticipant(interaction.user);
+  
+  let participant = await getParticipant(interaction.user, interaction.guild.members);
 
   if(!(await draft.hasDrafter(participant))){
     return interaction.followUp(

@@ -11,7 +11,7 @@
 require("dotenv").config();
 
 // Import necessary definitions from Discord
-const {Client, Collection, Events, GatewayIntentBits} = require("discord.js");
+const {Client, Events, GatewayIntentBits} = require("discord.js");
 // Create the Discord client -- this is, for all
 // practical purposes, "the bot"
 const draftbot = new Client({intents: [GatewayIntentBits.Guilds]});
@@ -37,15 +37,41 @@ draftbot.login(process.env.DISCORD_TOKEN);
 // Load commands from folder
 draftbot.commands = require("./commands");
 
-// Handle slash commands
+// Load buttons from folder
+draftbot.buttons = require("./buttons");
+
+draftbot.embedColor = 0x13D4D4;
+
+// Handle interactions
 draftbot.on(Events.InteractionCreate, i => {
-  // Exit if interaction isn't a command
-  if(!i.isChatInputCommand()) return;
-  // Use the command name from the interaction
-  // to determine what code to run
-  command = i.client.commands[i.commandName];
-  // Actually run the code
-  command.run(i);
+  // Slash command handler
+  if(i.isChatInputCommand()){
+    // Use the command name from the interaction
+    // to determine what code to run
+    const command = i.client.commands[i.commandName];
+    // Actually run the code
+    command.run(i);
+  }
+  // Button click handler
+  if(i.isButton()){
+    try{
+      const buttonName = i.customId
+        .split("-")
+        .map((word,  idx) =>
+          idx === 0 ?
+            word
+            :
+            `${word.substring(0, 1).toUpperCase()}${word.substring(1)}`
+        ).join("");
+
+      const button = i.client.buttons[buttonName];
+      button.run(i);
+    }
+    catch(e){
+      console.log(e);
+    }
+  }
+
 });
 
 // Load models and connect to database

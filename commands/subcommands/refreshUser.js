@@ -1,5 +1,5 @@
 const {MessageFlags} = require("discord.js");
-const {getParticipant} = require("../../utils");
+const {getParticipant, getUserNickname} = require("../../utils");
 
 const refreshUser = async interaction => {
   await interaction.deferReply({
@@ -9,16 +9,17 @@ const refreshUser = async interaction => {
   try{
     // Get user info from Discord
     const user = interaction.options.getUser("user") || interaction.user;
-    // Get guild membership info from Discord
-    // (needed for updating server nickname)
-    const member = await interaction.guild.members.fetch(user.id);
+
     // Get participant info from database
     const participant = await getParticipant(user);
 
-    // Get user's current display name and
-    // add to server hashmap
-    const nicknames = participant.discordServerNicknames || {};
-    nicknames[interaction.guildId] = member.nickname;
+    // Add participant's server nickname to
+    // hashmap (via helper function)
+    const nicknames = await getUserNickname({
+      userId: user.id,
+      members: interaction.guild.members,
+      nicknames: participant.discordServerNicknames
+    });
 
     await participant.update({
       discordUsername: user.username,

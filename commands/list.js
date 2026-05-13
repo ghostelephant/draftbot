@@ -1,12 +1,12 @@
 const {SlashCommandBuilder} = require("discord.js");
 
 const {
-  listParticipants,
+  listDrafters,
   listPicks
 } = require("./subcommands");
 
 const subcommands = {
-  participants: listParticipants,
+  drafters: listDrafters,
   picks: listPicks
 };
 
@@ -19,8 +19,8 @@ const data = new SlashCommandBuilder()
   .setName("list")
   .setDescription("List selected draft data")
   .addSubcommand(sc => 
-    sc.setName("participants")
-      .setDescription("List participants in a draft")
+    sc.setName("drafters")
+      .setDescription("List registered drafters")
   )
   .addSubcommand(sc =>
     sc.setName("picks")

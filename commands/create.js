@@ -1,37 +1,46 @@
 const {SlashCommandBuilder} = require("discord.js");
 const {Draft} = require("../models");
 const {Op} = require("sequelize");
-const getParticipant = require("../utils/getParticipant");
+const {
+  getParticipant,
+  getDraft
+ } = require("../utils");
 
 // The actual code to run
 const create = async interaction => {
   await interaction.deferReply();
 
-  const draftData = {
-    name: interaction.options.getString("name"),
+  
+
+  // const existingDraft = await Draft.findOne({
+  //   where: {
+  //      discordGuildId: draftData.discordGuildId,
+  //      discordChannelId: draftData.discordChannelId,
+  //      status: {
+  //       [Op.notIn]: ["completed", "abandoned"]
+  //      }
+  //   }
+  // });
+
+  const existingDraft = await getDraft({
     discordGuildId: interaction.guildId,
     discordChannelId: interaction.channelId,
-    isAnonymous: !!interaction.options.getBoolean("anonymous"),
-    status: "setup"
-  };
-
-  const existingDraft = await Draft.findOne({
-    where: {
-       discordGuildId: draftData.discordGuildId,
-       discordChannelId: draftData.discordChannelId,
-       status: {
-        [Op.notIn]: ["completed", "abandoned"]
-       }
-    }
+    excludeStatus: ["completed", "abandoned"]
   });
 
   if(existingDraft){
     return interaction.followUp(`:no_entry_sign: New draft was not created!\nA draft, "**${existingDraft.name}**," is already running in this channel.`)
   }
+  
+  const draft = await Draft.create({
+    name: interaction.options.getString("name"),
+    discordGuildId: interaction.guildId,
+    discordChannelId: interaction.channelId,
+    isAnonymous: !!interaction.options.getBoolean("anonymous"),
+    status: "setup"
+  });
 
-  const draft = await Draft.create(draftData);
-
-  const participant = await getParticipant(interaction.user);
+  const participant = await getParticipant(interaction.user, interaction.guild.members);
   draft.setCreatedBy(participant);
 
   await interaction.followUp(`:white_check_mark: Your draft "**${draft.name}**" has been created!`);
